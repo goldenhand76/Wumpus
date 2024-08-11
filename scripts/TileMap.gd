@@ -2,16 +2,22 @@ extends TileMap
 
 enum CellType { EMPTY, WUMPUS, PIT, BAT, GOLD, BREEZE, STINK }
 
+const TILE_SIZE = 64  # Size of one grid tile
+
 var MAP_SIZE = 10  # Define the size of your grid
 var grid = []  # This will store your game grid
 var neighbors = [[-1, 0], [1, 0], [0, -1], [0, 1]]
 
 func _ready():
 	generate_map()
+	$Camera2D.offset = Vector2(TILE_SIZE * MAP_SIZE/2, TILE_SIZE * MAP_SIZE/2)
 	var player = get_node("../Player")  # Adjust path if necessary
+	var ui = get_node("../UI")
 	player.set_map_size(MAP_SIZE)
 	player.set_grid(grid)
-
+	ui.get_node("MessageLabel")
+	ui.new_position(Vector2(TILE_SIZE * MAP_SIZE/2, -100))
+	
 func generate_map():
 	grid.clear()
 	for i in range(MAP_SIZE):

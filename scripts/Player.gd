@@ -11,7 +11,7 @@ func set_map_size(size):
 
 func set_grid(new_grid):
 	grid = new_grid
-
+	
 func _ready():
 	position = player_pos * TILE_SIZE
 
@@ -21,15 +21,24 @@ func _input(event):
 	elif event.is_action_pressed("ui_down"):
 		move_player(Vector2(0, 1))
 	elif event.is_action_pressed("ui_left"):
+		$Sprite2D.scale = Vector2(-1, 1)
 		move_player(Vector2(-1, 0))
 	elif event.is_action_pressed("ui_right"):
+		$Sprite2D.scale = Vector2(1, 1)
 		move_player(Vector2(1, 0))
 
 func move_player(direction):
-	var new_pos = player_pos + direction
-	if new_pos.x >= 0 and new_pos.x < map_size and new_pos.y >= 0 and new_pos.y < map_size:
-		player_pos = new_pos
-		position = player_pos * TILE_SIZE
+	var target = player_pos + direction
+	if target.x >= 0 and target.x < map_size and target.y >= 0 and target.y < map_size:
+		player_pos = target
+		var tween = create_tween()
+		tween.tween_property(self, "position", target*TILE_SIZE, 0.5)
+		$AnimationPlayer.play("moving")
+		self.set_process_input(false)
+		await tween.finished
+		self.set_process_input(true)
+		$AnimationPlayer.stop()
+		#position = player_pos * TILE_SIZE
 		check_room()
 
 func check_room():

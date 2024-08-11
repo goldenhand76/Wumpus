@@ -1,13 +1,55 @@
-[gd_scene load_steps=7 format=3 uid="uid://srvw8vls25d5"]
+[gd_scene load_steps=12 format=3 uid="uid://srvw8vls25d5"]
 
 [ext_resource type="Script" path="res://scripts/TileMap.gd" id="1_2w7bj"]
 [ext_resource type="TileSet" uid="uid://crtvsm1cb54nl" path="res://assets/TileSet.tres" id="1_ak3vt"]
 [ext_resource type="Script" path="res://scripts/Player.gd" id="2_8w3fv"]
-[ext_resource type="Texture2D" uid="uid://ugam23qc7xsu" path="res://assets/Player.png" id="4_cuxmq"]
+[ext_resource type="Texture2D" uid="uid://cbe4jcd00il84" path="res://assets/Sprite.png" id="4_dhnl6"]
 [ext_resource type="Script" path="res://scripts/UI.gd" id="4_u6tce"]
+[ext_resource type="Texture2D" uid="uid://cphxm4vv7hg87" path="res://assets/icon.svg" id="6_r83to"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jbi4y"]
 size = Vector2(62, 61)
+
+[sub_resource type="Animation" id="Animation_2rqkm"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+
+[sub_resource type="Animation" id="Animation_w61qb"]
+resource_name = "moving"
+length = 0.2
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [1, 0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_68clx"]
+_data = {
+"RESET": SubResource("Animation_2rqkm"),
+"moving": SubResource("Animation_w61qb")
+}
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_au842"]
+size = Vector2(32, 32)
 
 [node name="Main" type="Node2D"]
 position = Vector2(33, 32)
@@ -19,15 +61,25 @@ format = 2
 layer_0/tile_data = PackedInt32Array(0, 0, 0, 65536, 0, 0, 131072, 0, 0, 196608, 0, 0, 262144, 0, 0, 262146, 0, 0, 262147, 0, 0, 196611, 0, 0, 131075, 0, 0, 131074, 0, 0, 65538, 0, 0, 131073, 0, 0, 196609, 0, 0, 1, 0, 0, 2, 0, 0, 196610, 0, 0, 65537, 0, 0, 65539, 0, 0, 3, 0, 0, 65540, 0, 0, 4, 0, 0, 131076, 0, 0, 196612, 0, 0, 262148, 0, 0, 262145, 0, 0)
 script = ExtResource("1_2w7bj")
 
+[node name="Camera2D" type="Camera2D" parent="TileMap"]
+position = Vector2(32, 32)
+
 [node name="Player" type="CharacterBody2D" parent="."]
 script = ExtResource("2_8w3fv")
 
 [node name="Sprite2D" type="Sprite2D" parent="Player"]
-texture = ExtResource("4_cuxmq")
+texture = ExtResource("4_dhnl6")
+hframes = 2
+frame = 1
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
 position = Vector2(0, -0.5)
 shape = SubResource("RectangleShape2D_jbi4y")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Player"]
+libraries = {
+"": SubResource("AnimationLibrary_68clx")
+}
 
 [node name="UI" type="Control" parent="."]
 layout_mode = 3
@@ -39,28 +91,26 @@ offset_bottom = 12.0
 script = ExtResource("4_u6tce")
 metadata/_edit_use_anchors_ = true
 
+[node name="PopupMenu" type="PopupMenu" parent="UI"]
+
 [node name="MessageLabel" type="Label" parent="UI"]
-layout_mode = 0
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.15
+anchor_top = -0.1
+anchor_right = -0.15
+anchor_bottom = -0.1
 offset_right = 40.0
 offset_bottom = 23.0
 metadata/_edit_use_anchors_ = true
 
-[node name="Yes" type="Button" parent="UI"]
-layout_mode = 0
-offset_left = 26.0
-offset_top = 31.0
-offset_right = 61.0
-offset_bottom = 62.0
-text = "Yes
-"
+[node name="Wumpus" type="StaticBody2D" parent="."]
+position = Vector2(255, 0)
 
-[node name="No" type="Button" parent="UI"]
-layout_mode = 0
-offset_left = 66.0
-offset_top = 31.0
-offset_right = 97.0
-offset_bottom = 62.0
-text = "No"
+[node name="Sprite2D" type="Sprite2D" parent="Wumpus"]
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("6_r83to")
 
-[connection signal="pressed" from="UI/Yes" to="Player" method="_on_yes_pressed"]
-[connection signal="pressed" from="UI/No" to="Player" method="_on_no_pressed"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Wumpus"]
+position = Vector2(-1, 0)
+shape = SubResource("RectangleShape2D_au842")
