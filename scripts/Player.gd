@@ -16,7 +16,23 @@ func _ready():
 	position = player_pos * TILE_SIZE
 
 func _input(event):
-	if event.is_action_pressed("ui_up"):
+	var ev = InputEventAction.new()
+
+	if event is InputEventScreenDrag:
+		if abs(event.relative[0]) > abs(event.relative[1]):
+			if event.relative[0] > 1:
+				$Sprite2D.scale = Vector2(1, 1)
+				move_player(Vector2(1, 0))
+			elif event.relative[0] < -1:
+				$Sprite2D.scale = Vector2(-1, 1)
+				move_player(Vector2(-1, 0))
+		else:
+			if event.relative[1] < -1:
+				move_player(Vector2(0, -1))
+			elif event.relative[1] > 1:
+				move_player(Vector2(0, 1))
+				
+	elif event.is_action_pressed("ui_up"):
 		move_player(Vector2(0, -1))
 	elif event.is_action_pressed("ui_down"):
 		move_player(Vector2(0, 1))
@@ -27,6 +43,9 @@ func _input(event):
 		$Sprite2D.scale = Vector2(1, 1)
 		move_player(Vector2(1, 0))
 
+#func _unhandled_input(event):
+	#print(event)
+	
 func move_player(direction):
 	var target = player_pos + direction
 	if target.x >= 0 and target.x < map_size and target.y >= 0 and target.y < map_size:
